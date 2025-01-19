@@ -1,0 +1,27 @@
+{
+    "version": 1,
+    "author": "Rafael Souza Barbosa",
+    "editor": "wokwi",
+    "parts": [
+      { "type": "board-pi-pico-w", "id": "pico", "top": 0, "left": 0, "attrs": {} },
+      { "type": "wokwi-rgb-led", "id": "rgb1", "top": 61.6, "left": -123.7, "attrs": {} },
+      {
+        "type": "wokwi-buzzer",
+        "id": "bz1",
+        "top": -7.2,
+        "left": 117,
+        "attrs": { "volume": "0.1" }
+      }
+    ],
+    "connections": [
+      [ "pico:GP0", "$serialMonitor:RX", "", [] ],
+      [ "pico:GP1", "$serialMonitor:TX", "", [] ],
+      [ "pico:GND.4", "rgb1:COM", "black", [ "h0" ] ],
+      [ "pico:GP12", "rgb1:B", "blue", [ "h0" ] ],
+      [ "pico:GP13", "rgb1:R", "red", [ "h0" ] ],
+      [ "pico:GP11", "rgb1:G", "green", [ "h0" ] ],
+      [ "pico:GND.5", "bz1:1", "black", [ "h0" ] ],
+      [ "pico:GP21", "bz1:2", "red", [ "h0" ] ]
+    ],
+    "dependencies": {}
+  }
