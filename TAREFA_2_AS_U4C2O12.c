@@ -38,11 +38,16 @@ void setup_gpio() {
 }
 
 // controlar os buzzers
-void buzzer_control(int buzzer, int sleep){
-    for (int i; i<5; i++){
-        gpio_put(buzzer, 1);
-        sleep_ms(sleep); // vai ativar o buzzer A ou B por 2 segundos
-        gpio_put(buzzer, 0);
+void buzzer_control(int BUZZER, int frequency, int duration_ms){
+    int period = 1000000 / frequency;  // Calcula o período da frequência em microssegundos
+    int cycles = (duration_ms * 1000) / period;  // Quantos ciclos de som em um tempo de duração
+
+    for (int i = 0; i < cycles; i++) {
+        gpio_put(BUZZER, 1);   // Liga o buzzer (HIGH)
+        sleep_us(period / 2);       // Espera metade do período
+        gpio_put(BUZZER, 0);   // Desliga o buzzer (LOW)
+        sleep_us(period / 2);       // Espera a outra metade do período
+        sleep_ms(5);                // Adiciona um pequeno atraso de 5ms entre os ciclos
     }
 }
 
@@ -53,21 +58,24 @@ void process_command(const char *command) {
     if (strcmp(command, "RED") == 0) {
         gpio_put(LED_RED, 1);
         printf("LED vermelho ligado.\n");
-        buzzer_control(BUZZER_A, 500);
+        buzzer_control(BUZZER_A, 800, 1000);
 
     } else if (strcmp(command, "GREEN") == 0) {
         gpio_put(LED_GREEN, 1);
         printf("LED verde ligado.\n");
-        buzzer_control(BUZZER_A, 800);
+        buzzer_control(BUZZER_A, 800, 750);
 
     } else if (strcmp(command, "BLUE") == 0) {
         gpio_put(LED_BLUE, 1);
         printf("LED azul ligado.\n");
-        buzzer_control(BUZZER_A, 1000);
+        buzzer_control(BUZZER_A, 800, 500);
 
     } else if (strcmp(command, "OFF") == 0) {
         turn_off_leds();
         printf("LEDs desligados.\n");
+        gpio_put(LED_BLUE, 1);
+        printf("LED azul ligado.\n");
+        buzzer_control(BUZZER_A, 800, 250);
     } else {
         printf("Comando desconhecido: %s\n", command);
     }
@@ -78,28 +86,19 @@ int main() {
     setup_gpio();
 
     char command[64];
-    int index = 0;
 
     while (1) {
-        char c = getchar();
+        printf("----------------- LISTA DE COMANDOS ---------------------\n");
+        printf("RED \nGREEN \nBLUE \nOFF\n");
+        printf("-------------------------------------------------------------\n");
+        printf("Digite um dos comandos acima: ");
+        scanf("%s", &command);
 
-        if (c == '_') {
-            command[index] = '\0'; // Finaliza a string
-            printf("Comando recebido: %s\n", command);
-            process_command(command);
-            index = 0;
-            command[0] = '\0'; // Limpa o início da string
-        } else {
-            if (index < 63) { // Previne overflow no buffer
-                command[index++] = c;
-            } else {
-                printf("Comando muito longo, descartando.\n");
-                index = 0;
-                command[0] = '\0'; // Reseta a string em caso de erro
-            }
-        }
+        printf("\nComando: %s\n", command);
+        
+        process_command(command);
+
+        sleep_ms(10);
     }
-    sleep_ms(10);
-
     return 0;
 }
