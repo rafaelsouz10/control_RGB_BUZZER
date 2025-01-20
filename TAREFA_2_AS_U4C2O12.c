@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "pico/stdlib.h"
 
 // Definições dos pinos
@@ -8,13 +9,6 @@
 #define LED_GREEN 11
 #define LED_BLUE 12
 #define BUZZER_A 21
-
-// Função para desligar todos os LEDs
-void turn_off_leds() {
-    gpio_put(LED_RED, 0);
-    gpio_put(LED_GREEN, 0);
-    gpio_put(LED_BLUE, 0);
-}
 
 // Função para configurar os GPIOs
 void setup_gpio() {
@@ -37,7 +31,21 @@ void setup_gpio() {
     gpio_put(BUZZER_A, 0);
 }
 
-// controlar os buzzers
+// Função para desligar todos os LEDs
+void turn_off_leds() {
+    gpio_put(LED_RED, 0);
+    gpio_put(LED_GREEN, 0);
+    gpio_put(LED_BLUE, 0);
+}
+
+// Função para ligar todos os LEDs e transformar no led branco
+void turn_on_leds() {
+    gpio_put(LED_RED, 1);
+    gpio_put(LED_GREEN, 1);
+    gpio_put(LED_BLUE, 1);
+}
+
+//Função para controlar os buzzers
 void buzzer_control(int BUZZER, int frequency, int duration_ms){
     int period = 1000000 / frequency;  // Calcula o período da frequência em microssegundos
     int cycles = (duration_ms * 1000) / period;  // Quantos ciclos de som em um tempo de duração
@@ -51,6 +59,15 @@ void buzzer_control(int BUZZER, int frequency, int duration_ms){
     }
 }
 
+// Converter string para maiúsculas
+void string_to_upper(char *str) {
+    while (*str) {
+        *str = toupper((unsigned char)*str);
+        str++;
+    }
+}
+
+//Função para processar o comando e ligar o respectivo led
 void process_command(const char *command) {
 
     turn_off_leds();
@@ -70,14 +87,18 @@ void process_command(const char *command) {
         printf("LED azul ligado.\n");
         buzzer_control(BUZZER_A, 800, 500);
 
+    } else if (strcmp(command, "BRANCO") ==0){
+        turn_on_leds();
+        printf("LED branco ligado.\n");
+        buzzer_control(BUZZER_A, 800, 250);
+
     } else if (strcmp(command, "OFF") == 0) {
         turn_off_leds();
         printf("LEDs desligados.\n");
-        gpio_put(LED_BLUE, 1);
-        printf("LED azul ligado.\n");
-        buzzer_control(BUZZER_A, 800, 250);
+        buzzer_control(BUZZER_A, 500, 250);
     } else {
         printf("Comando desconhecido: %s\n", command);
+        sleep_ms(1000);
     }
 }
 
@@ -92,7 +113,9 @@ int main() {
         printf("RED \nGREEN \nBLUE \nOFF\n");
         printf("-------------------------------------------------------------\n");
         printf("Digite um dos comandos acima: ");
-        scanf("%s", &command);
+        scanf("%s", command);
+
+        string_to_upper(command);
 
         printf("\nComando: %s\n", command);
         
