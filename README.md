@@ -15,7 +15,7 @@ Este projeto implementa um sistema simples de controle de LEDs e um buzzer usand
      - `BLUE`: 1000 ms
 
 3. **Interface Serial**:
-   - Comandos são enviados via UART e terminados com um caractere `_`.
+   - Comandos são enviados via UART.
 
 ## Configuração de Hardware
 
@@ -46,9 +46,9 @@ Este projeto implementa um sistema simples de controle de LEDs e um buzzer usand
 | `BLUE`   | Liga o LED azul e aciona o buzzer por 1000 ms.    |
 | `OFF`    | Desliga todos os LEDs.                            |
 
-Os comandos devem ser enviados via UART e finalizados com o caractere `_`.
+Os comandos devem ser enviados via UART.
 
 ### Exemplo de Envio de Comando:
-- Para ligar o LED vermelho: `RED_`
-- Para desligar todos os LEDs: `OFF_`
+- Para ligar o LED vermelho: `RED`
+- Para desligar todos os LEDs: `OFF`
 
