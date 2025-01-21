@@ -3,14 +3,20 @@
 #include <string.h>
 #include <ctype.h>
 #include "pico/stdlib.h"
-#include "pico/bootrom.h" // Para reset_usb_boot
+#include "button_bootsel.h"
 
 // Definições dos pinos
 #define LED_RED 13
 #define LED_GREEN 11
 #define LED_BLUE 12
 #define BUZZER_A 21
-#define BUTTON_A 5 // Botão A
+
+// Função para desligar todos os LEDs
+void turn_off_leds() {
+    gpio_put(LED_RED, 0);
+    gpio_put(LED_GREEN, 0);
+    gpio_put(LED_BLUE, 0);
+}
 
 // Função para configurar os GPIOs
 void setup_gpio() {
@@ -28,21 +34,9 @@ void setup_gpio() {
     gpio_init(LED_BLUE);
     gpio_set_dir(LED_BLUE, GPIO_OUT);
 
-    // Configurar botão como entrada com pull-up
-    gpio_init(BUTTON_A);
-    gpio_set_dir(BUTTON_A, GPIO_IN);
-    gpio_pull_up(BUTTON_A);
-
     // Inicializar todos os LEDs e buzzers desligados
     turn_off_leds();
     gpio_put(BUZZER_A, 0);
-}
-
-// Função para desligar todos os LEDs
-void turn_off_leds() {
-    gpio_put(LED_RED, 0);
-    gpio_put(LED_GREEN, 0);
-    gpio_put(LED_BLUE, 0);
 }
 
 // Função para ligar todos os LEDs e transformar no led branco
@@ -108,19 +102,11 @@ void process_command(const char *command) {
     }
 }
 
-// Manipulador de interrupção para o botão A
-void gpio_irq_handler(uint gpio, uint32_t events) {
-    if (gpio == BUTTON_A) { // Verifica se a interrupção veio do botão A
-        printf("\nBotão A pressionado! Habilitando o modo gravação...\n");
-        reset_usb_boot(0, 0); // Entra no modo de gravação USB
-    }
-}
-
 int main() {
     stdio_init_all();
     setup_gpio();
 
-    // Configura a interrupção no GPIO5 para detectar borda de descida (botão pressionado)
+    setup_gpio_button_A();
     gpio_set_irq_enabled_with_callback(BUTTON_A, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
 
     char command[64];
