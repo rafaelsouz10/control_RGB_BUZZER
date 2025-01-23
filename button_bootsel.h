@@ -24,8 +24,7 @@ void gpio_irq_handler(uint gpio, uint32_t events) {
 
 //chame a função setup_gpio_button_A() no main() para configurar o botão como entrada pull-up
 
-//logo em seguinda, chame a função abaixo (linha 25) para configurar a interrupção no 
-//GPIO5 para detectar borda de descida (botão pressionado)
+//logo em seguinda, chame a função abaixo para configurar a interrupção no GPIO5 para detectar borda de descida (botão pressionado)
 
 // -->    gpio_set_irq_enabled_with_callback(BUTTON_A, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
 
